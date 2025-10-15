@@ -29,28 +29,26 @@ const elements = {
     messageCount: document.getElementById('messageCount')
 };
 
-// Configuration
+// Configuration - uses external config.js
 const config = {
-    // In a production environment, this would point to your backend API
-    // For now, we'll use the intent-identifier directly
-    useLocalIntentAgent: true,
-    apiEndpoint: 'http://localhost:3000/api/classify' // placeholder
+    get apiEndpoint() {
+        return window.API_CONFIG ? window.API_CONFIG.CLASSIFY_ENDPOINT : 'http://localhost:3000/api/classify';
+    },
+    get healthEndpoint() {
+        return window.API_CONFIG ? window.API_CONFIG.HEALTH_ENDPOINT : 'http://localhost:3000/api/health';
+    }
 };
 
 // Initialize the application
 async function initialize() {
     console.log('Initializing Intent Identifier Chat Interface...');
+    console.log('Backend API URL:', config.apiEndpoint);
 
     // Set up event listeners
     setupEventListeners();
 
-    // Check if we can use the local intent agent
+    // Check backend connection
     await checkConnection();
-
-    // Load IntentAgent if available
-    if (config.useLocalIntentAgent) {
-        await loadIntentAgent();
-    }
 }
 
 // Set up event listeners
@@ -80,11 +78,10 @@ function autoResizeTextarea() {
     textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
 }
 
-// Check connection to backend/local service
+// Check connection to backend API
 async function checkConnection() {
     try {
-        // Try to connect to the local server API
-        const response = await fetch(`${config.apiEndpoint.replace('/classify', '/health')}`, {
+        const response = await fetch(config.healthEndpoint, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -94,34 +91,19 @@ async function checkConnection() {
         if (response.ok) {
             const data = await response.json();
             updateStatus('connected', `Connected to ${data.service}`);
-            config.useLocalIntentAgent = false; // Use API instead of mock
+            console.log('✓ Backend connected:', data);
             return true;
         } else {
-            throw new Error('API not available');
+            throw new Error('API returned error status');
         }
     } catch (error) {
-        console.log('API not available, using mock classification');
-        updateStatus('connected', 'Demo Mode (Mock Classification)');
-        config.useLocalIntentAgent = true; // Fallback to mock
+        console.error('✗ Backend connection failed:', error.message);
+        updateStatus('disconnected', 'Backend Unavailable - Please start server');
+        addErrorMessage('Cannot connect to backend server. Please ensure the server is running at: ' + config.apiEndpoint);
         return false;
     }
 }
 
-// Load the Intent Agent (when running locally)
-async function loadIntentAgent() {
-    try {
-        // Note: This requires running in a Node.js environment
-        // For browser-only deployment, you'll need a backend API
-        console.log('Intent Agent would be loaded here in a Node.js environment');
-        console.log('For GitHub Pages, this will use a mock implementation');
-
-        // Set status to indicate we're using browser-only mode
-        updateStatus('connected', 'Browser Mode (Demo)');
-    } catch (error) {
-        console.error('Failed to load Intent Agent:', error);
-        updateStatus('disconnected', 'Failed to load agent');
-    }
-}
 
 // Handle sending a message
 async function handleSendMessage() {
@@ -170,92 +152,30 @@ async function handleSendMessage() {
 
 // Process message and get intent classification
 async function processMessageWithIntent(message) {
-    // If API is available, use it
-    if (!config.useLocalIntentAgent) {
-        try {
-            const response = await fetch(config.apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ message })
-            });
+    try {
+        const response = await fetch(config.apiEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message })
+        });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error('API call failed, falling back to mock classification:', error);
-            config.useLocalIntentAgent = true; // Fallback to mock for future calls
-            updateStatus('connected', 'Demo Mode (API Failed)');
+        if (!response.ok) {
+            throw new Error(`Backend returned status ${response.status}`);
         }
-    }
 
-    // Fallback: Mock classification for browser environment
-    await sleep(500); // Simulate processing delay
-    return mockIntentClassification(message);
+        const data = await response.json();
+        console.log('✓ Intent classified:', data);
+        return data;
+    } catch (error) {
+        console.error('✗ API call failed:', error);
+        updateStatus('disconnected', 'Backend Error');
+
+        throw new Error(`Failed to connect to backend at ${config.apiEndpoint}. ${error.message}`);
+    }
 }
 
-// Mock intent classification (for browser-only deployment)
-function mockIntentClassification(message) {
-    const lowerMessage = message.toLowerCase();
-
-    let intent = 'unknown';
-    let confidence = 0.5;
-    let entities = {};
-    let response = '';
-
-    // Simple pattern matching
-    if (/^(hi|hello|hey|greetings|good morning|good afternoon|good evening)/i.test(lowerMessage)) {
-        intent = 'greeting';
-        confidence = 0.92;
-        response = 'Hello! How can I assist you today?';
-    } else if (/(what|when|where|why|how|who|which)/i.test(lowerMessage) && lowerMessage.includes('?')) {
-        intent = 'question';
-        confidence = 0.88;
-        response = 'That\'s an interesting question. Let me help you with that.';
-    } else if (/(please|could you|can you|would you|schedule|book|create|add)/i.test(lowerMessage)) {
-        intent = 'command';
-        confidence = 0.85;
-        response = 'I understand you want me to perform an action. I\'ll help you with that.';
-    } else if (/(thanks|thank you|appreciate|grateful|bye|goodbye|see you|farewell)/i.test(lowerMessage)) {
-        intent = 'goodbye';
-        confidence = 0.90;
-        response = 'You\'re welcome! Feel free to come back anytime.';
-    } else if (/(help|assist|support|clarify|explain)/i.test(lowerMessage)) {
-        intent = 'clarification';
-        confidence = 0.87;
-        response = 'I\'m here to help clarify things for you. What would you like to know more about?';
-    } else if (/(tell me|what is|what are|show me|give me|information about)/i.test(lowerMessage)) {
-        intent = 'information_request';
-        confidence = 0.86;
-        response = 'I\'ll provide you with the information you\'re looking for.';
-    } else if (/(good|great|excellent|bad|poor|terrible|feedback|opinion)/i.test(lowerMessage)) {
-        intent = 'feedback';
-        confidence = 0.84;
-        response = 'Thank you for your feedback! I appreciate your input.';
-    } else {
-        intent = 'unknown';
-        confidence = 0.65;
-        response = 'I\'m not entirely sure what you mean, but I\'m here to help. Could you rephrase that?';
-    }
-
-    // Extract simple entities (this is very basic)
-    if (lowerMessage.includes('tomorrow') || lowerMessage.includes('today') || lowerMessage.includes('yesterday')) {
-        entities.time_reference = lowerMessage.match(/(tomorrow|today|yesterday)/i)[0];
-    }
-
-    return {
-        intent,
-        confidence,
-        entities,
-        response,
-        error: null
-    };
-}
 
 // Add message to chat display
 function addMessageToChat(text, sender) {
@@ -416,11 +336,3 @@ function sleep(ms) {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', initialize);
-
-// Export for potential use in Node.js environment
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        processMessageWithIntent,
-        mockIntentClassification
-    };
-}
