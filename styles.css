@@ -466,7 +466,13 @@ body {
     .chat-panel.collapsed,
     .intent-panel.collapsed {
         min-height: auto;
-        flex: 0;
+        flex: 0 0 auto;
+    }
+
+    /* Ensure panel headers are always visible */
+    .chat-panel .panel-header,
+    .intent-panel .panel-header {
+        display: flex !important;
     }
 
     /* Rotate toggle button when collapsed */
