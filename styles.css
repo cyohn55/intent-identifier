@@ -83,6 +83,32 @@ body {
     color: #333;
 }
 
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toggle-btn {
+    display: none;
+    background: #609966;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+    background: #4a7a4f;
+}
+
+.mobile-only {
+    display: none;
+}
+
 .clear-btn {
     background: #ff4757;
     color: white;
@@ -377,7 +403,7 @@ body {
 @media (max-width: 1024px) {
     .main-content {
         grid-template-columns: 1fr;
-        grid-template-rows: 1fr 1fr;
+        grid-template-rows: auto auto;
     }
 
     .chat-panel {
@@ -389,10 +415,27 @@ body {
 @media (max-width: 768px) {
     .container {
         height: 95vh;
+        border-radius: 8px;
+    }
+
+    body {
+        padding: 10px;
+    }
+
+    .header {
+        padding: 16px 20px;
     }
 
     .header h1 {
-        font-size: 22px;
+        font-size: 20px;
+    }
+
+    .subtitle {
+        font-size: 12px;
+    }
+
+    .panel-header {
+        padding: 12px 16px;
     }
 
     .panel-header h2 {
@@ -401,5 +444,87 @@ body {
 
     .message {
         max-width: 85%;
+        font-size: 14px;
+    }
+
+    /* Show mobile toggle buttons */
+    .mobile-only {
+        display: block;
+    }
+
+    /* Collapsed state for panels */
+    .chat-panel.collapsed .chat-messages,
+    .chat-panel.collapsed .chat-input-container {
+        display: none;
+    }
+
+    .intent-panel.collapsed .intent-display,
+    .intent-panel.collapsed .intent-summary {
+        display: none;
+    }
+
+    .chat-panel.collapsed,
+    .intent-panel.collapsed {
+        min-height: auto;
+        flex: 0;
+    }
+
+    /* Rotate toggle button when collapsed */
+    .collapsed .toggle-btn {
+        transform: rotate(-90deg);
+    }
+
+    /* Make panels stack and take appropriate space */
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .chat-panel,
+    .intent-panel {
+        flex: 1;
+        min-height: 300px;
+    }
+
+    /* Chat input adjustments */
+    .chat-input-container {
+        padding: 12px 16px;
+        gap: 8px;
+    }
+
+    .message-input {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    .send-btn {
+        padding: 10px 20px;
+        min-width: 80px;
+        height: 42px;
+        font-size: 13px;
+    }
+
+    /* Intent display adjustments */
+    .intent-display {
+        padding: 16px;
+        font-size: 12px;
+    }
+
+    .intent-summary {
+        padding: 12px 16px;
+    }
+
+    .summary-item {
+        padding: 6px 0;
+        font-size: 13px;
+    }
+
+    /* Status bar adjustments */
+    .status-bar {
+        padding: 10px 16px;
+        font-size: 12px;
+        flex-wrap: wrap;
+        gap: 8px;
     }
 }
