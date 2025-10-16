@@ -489,18 +489,18 @@ body {
         transition: flex 0.3s ease, min-height 0.3s ease;
     }
 
-    /* When a panel is NOT collapsed, it takes normal space */
-    .chat-panel:not(.collapsed),
-    .intent-panel:not(.collapsed) {
-        flex: 1 1 auto;
-        min-height: 300px;
-    }
-
-    /* When a panel IS collapsed, it only takes header space and doesn't grow */
+    /* When a panel IS collapsed, it only takes header space */
     .chat-panel.collapsed,
     .intent-panel.collapsed {
         flex: 0 0 auto;
         min-height: 0;
+    }
+
+    /* When a panel is NOT collapsed, it expands to fill available space */
+    .chat-panel:not(.collapsed),
+    .intent-panel:not(.collapsed) {
+        flex: 1 1 100%;
+        min-height: 300px;
     }
 
     /* Chat input adjustments */
