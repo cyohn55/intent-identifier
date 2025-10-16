@@ -485,12 +485,23 @@ body {
         display: flex;
         flex-direction: column;
         gap: 0;
+        height: 100%;
     }
 
     .chat-panel,
     .intent-panel {
-        flex: 1;
+        flex: 1 1 50%;
         min-height: 300px;
+        transition: flex 0.3s ease;
+    }
+
+    /* When one panel is collapsed, the other expands */
+    .chat-panel:not(.collapsed) {
+        flex: 1 1 auto;
+    }
+
+    .intent-panel:not(.collapsed) {
+        flex: 1 1 auto;
     }
 
     /* Chat input adjustments */
