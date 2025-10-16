@@ -242,9 +242,17 @@ function updateIntentSummary(intentResult) {
     // Format entities
     const entitiesCount = Object.keys(intentResult.entities).length;
     if (entitiesCount > 0) {
-        elements.intentEntities.textContent = JSON.stringify(intentResult.entities);
+        // Format entities in a more readable way
+        const entityList = Object.entries(intentResult.entities)
+            .map(([key, value]) => `${key}: "${value}"`)
+            .join(', ');
+        elements.intentEntities.textContent = entityList;
+        elements.intentEntities.style.fontFamily = 'monospace';
+        elements.intentEntities.style.color = '#609966';
     } else {
         elements.intentEntities.textContent = 'None detected';
+        elements.intentEntities.style.fontFamily = 'inherit';
+        elements.intentEntities.style.color = '#999';
     }
 
     // Update confidence badge

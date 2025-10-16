@@ -88,12 +88,24 @@ Choose from these categories: ${this.config.intentCategories.join(', ')}.
 
 User message: "${state.userInput}"
 
+Extract any relevant entities from the message. Entities are specific pieces of information like:
+- dates/times (e.g., "tomorrow", "3pm", "next week")
+- locations (e.g., "New York", "home", "office")
+- people (e.g., names, pronouns with context)
+- topics/subjects (e.g., "machine learning", "budget report")
+- actions (e.g., "schedule", "book", "create")
+- items/objects (e.g., "meeting", "flight", "document")
+- quantities (e.g., numbers, amounts, durations)
+- emotions/sentiments (e.g., "happy", "frustrated", "excited")
+
 IMPORTANT: Respond ONLY with valid JSON. Do not include any text before or after the JSON object.
 
 {
   "intent": "category_name",
   "confidence": 0.9,
-  "entities": {}
+  "entities": {
+    "entity_type": "extracted_value"
+  }
 }`;
 
       const messages = [
