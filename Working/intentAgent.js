@@ -83,49 +83,34 @@ class IntentAgent {
    */
   async identifyIntent(state) {
     try {
-      const intentPrompt = `Analyze the following user message and identify the primary intent.
-Choose from these categories: ${this.config.intentCategories.join(', ')}.
+      const intentPrompt = `You MUST extract entities from the user's message.
 
 User message: "${state.userInput}"
 
-Extract ALL relevant entities from the message. Look for:
-- people: names like "Jane", "John", "Sarah"
-- emotions: "mad", "happy", "frustrated", "excited", "sad", "angry"
-- times: "tomorrow", "3pm", "next Tuesday", "yesterday"
-- locations: "New York", "home", "office", "downtown"
-- topics: "machine learning", "budget", "project"
-- actions: "schedule", "book", "create", "cancel"
-- objects: "meeting", "flight", "document", "email"
-- quantities: "5 people", "2 hours", "$100"
+Step 1: Identify the intent from: ${this.config.intentCategories.join(', ')}
+
+Step 2: Extract ALL entities you find:
+- If there's a person's name → add "person": "name"
+- If there's an emotion word → add "emotion": "emotion"
+- If there's a time reference → add "time": "time"
+- If there's a location → add "location": "place"
+- If there's a topic/subject → add "topic": "subject"
+- If there's an action verb → add "action": "verb"
+- If there's an object/thing → add "object": "thing"
+
+CRITICAL: You MUST fill in the entities field. Do NOT leave it empty if there are ANY words that match the categories above.
 
 Examples:
-Message: "Jane makes me so mad!"
-{
-  "intent": "feedback",
-  "confidence": 0.85,
-  "entities": {
-    "person": "Jane",
-    "emotion": "mad"
-  }
-}
+"Jane makes me so mad!" → person: Jane, emotion: mad
+"studying for my exam tomorrow" → activity: studying, topic: exam, time: tomorrow
+"I'm feeling happy" → emotion: happy
+"Schedule a meeting with John" → action: schedule, object: meeting, person: John
 
-Message: "I need help studying for my exam tomorrow"
-{
-  "intent": "information_request",
-  "confidence": 0.9,
-  "entities": {
-    "activity": "studying",
-    "topic": "exam",
-    "time": "tomorrow"
-  }
-}
-
-IMPORTANT: Respond ONLY with valid JSON. Do not include any text before or after the JSON object. Always include an entities object, even if empty.
-
+Now respond ONLY with JSON in this EXACT format:
 {
   "intent": "category_name",
   "confidence": 0.9,
-  "entities": {}
+  "entities": {"key": "value"}
 }`;
 
       const messages = [
@@ -138,7 +123,8 @@ IMPORTANT: Respond ONLY with valid JSON. Do not include any text before or after
 
       // Try to parse the response to extract intent information
       // First, try to find JSON in the response
-      const jsonMatch = content.match(/\{[\s\S]*?\}/);
+      // Use greedy match to capture the entire JSON object including nested objects
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
 
       if (jsonMatch) {
         try {
@@ -261,6 +247,7 @@ Provide your analysis in the following format. Respond ONLY with valid JSON:
       // Try to parse the reasoning as JSON
       try {
         const content = reasoningResponse.content.trim();
+        // Use greedy match to capture the entire JSON object including nested objects
         const jsonMatch = content.match(/\{[\s\S]*\}/);
 
         if (jsonMatch) {
