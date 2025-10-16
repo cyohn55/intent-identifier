@@ -88,24 +88,44 @@ Choose from these categories: ${this.config.intentCategories.join(', ')}.
 
 User message: "${state.userInput}"
 
-Extract any relevant entities from the message. Entities are specific pieces of information like:
-- dates/times (e.g., "tomorrow", "3pm", "next week")
-- locations (e.g., "New York", "home", "office")
-- people (e.g., names, pronouns with context)
-- topics/subjects (e.g., "machine learning", "budget report")
-- actions (e.g., "schedule", "book", "create")
-- items/objects (e.g., "meeting", "flight", "document")
-- quantities (e.g., numbers, amounts, durations)
-- emotions/sentiments (e.g., "happy", "frustrated", "excited")
+Extract ALL relevant entities from the message. Look for:
+- people: names like "Jane", "John", "Sarah"
+- emotions: "mad", "happy", "frustrated", "excited", "sad", "angry"
+- times: "tomorrow", "3pm", "next Tuesday", "yesterday"
+- locations: "New York", "home", "office", "downtown"
+- topics: "machine learning", "budget", "project"
+- actions: "schedule", "book", "create", "cancel"
+- objects: "meeting", "flight", "document", "email"
+- quantities: "5 people", "2 hours", "$100"
 
-IMPORTANT: Respond ONLY with valid JSON. Do not include any text before or after the JSON object.
+Examples:
+Message: "Jane makes me so mad!"
+{
+  "intent": "feedback",
+  "confidence": 0.85,
+  "entities": {
+    "person": "Jane",
+    "emotion": "mad"
+  }
+}
+
+Message: "I need help studying for my exam tomorrow"
+{
+  "intent": "information_request",
+  "confidence": 0.9,
+  "entities": {
+    "activity": "studying",
+    "topic": "exam",
+    "time": "tomorrow"
+  }
+}
+
+IMPORTANT: Respond ONLY with valid JSON. Do not include any text before or after the JSON object. Always include an entities object, even if empty.
 
 {
   "intent": "category_name",
   "confidence": 0.9,
-  "entities": {
-    "entity_type": "extracted_value"
-  }
+  "entities": {}
 }`;
 
       const messages = [
