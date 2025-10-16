@@ -98,8 +98,8 @@ async function checkConnection() {
         }
     } catch (error) {
         console.error('✗ Backend connection failed:', error.message);
-        updateStatus('disconnected', 'Backend Unavailable - Please start server');
-        addErrorMessage('Cannot connect to backend server. Please ensure the server is running at: ' + config.apiEndpoint);
+        updateStatus('disconnected', 'Connecting to backend...');
+        // Don't show error message in chat - connection may succeed on first message send
         return false;
     }
 }
@@ -167,6 +167,10 @@ async function processMessageWithIntent(message) {
 
         const data = await response.json();
         console.log('✓ Intent classified:', data);
+
+        // Update status to connected on successful response
+        updateStatus('connected', 'Connected');
+
         return data;
     } catch (error) {
         console.error('✗ API call failed:', error);
