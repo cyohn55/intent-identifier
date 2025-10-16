@@ -83,31 +83,6 @@ body {
     color: #333;
 }
 
-.header-buttons {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.toggle-btn {
-    display: none;
-    background: #609966;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-.toggle-btn:hover {
-    background: #4a7a4f;
-}
-
-.mobile-only {
-    display: none;
-}
 
 .clear-btn {
     background: #ff4757;
@@ -447,59 +422,16 @@ body {
         font-size: 14px;
     }
 
-    /* Show mobile toggle buttons */
-    .mobile-only {
-        display: block;
-    }
-
-    /* Collapsed state for panels */
-    .chat-panel.collapsed .chat-messages,
-    .chat-panel.collapsed .chat-input-container {
-        display: none;
-    }
-
-    .intent-panel.collapsed .intent-display,
-    .intent-panel.collapsed .intent-summary {
-        display: none;
-    }
-
-    /* Ensure panel headers are always visible */
-    .chat-panel .panel-header,
-    .intent-panel .panel-header {
-        display: flex !important;
-    }
-
-    /* Rotate toggle button when collapsed */
-    .collapsed .toggle-btn {
-        transform: rotate(-90deg);
-    }
-
-    /* Make panels stack and take appropriate space */
+    /* Make panels stack vertically on mobile */
     .main-content {
         display: flex;
         flex-direction: column;
         gap: 0;
-        height: 100%;
     }
 
     .chat-panel,
     .intent-panel {
-        flex: 1 1 50%;
-        min-height: 300px;
-        transition: flex 0.3s ease, min-height 0.3s ease;
-    }
-
-    /* When a panel IS collapsed, it only takes header space */
-    .chat-panel.collapsed,
-    .intent-panel.collapsed {
-        flex: 0 0 auto;
-        min-height: 0;
-    }
-
-    /* When a panel is NOT collapsed, it expands to fill available space */
-    .chat-panel:not(.collapsed),
-    .intent-panel:not(.collapsed) {
-        flex: 1 1 100%;
+        flex: 1;
         min-height: 300px;
     }
 

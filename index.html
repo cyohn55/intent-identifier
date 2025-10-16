@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Souloxy Intent Identifier</title>
-    <link rel="stylesheet" href="styles.css?v=13">
-    <script src="config.js?v=13"></script>
-    <!-- Build: 2025-10-16-v13-final-expand-fix -->
+    <link rel="stylesheet" href="styles.css?v=14">
+    <script src="config.js?v=14"></script>
+    <!-- Build: 2025-10-16-v14-remove-toggle-functionality -->
 </head>
 <body>
     <div class="container">
@@ -22,10 +22,7 @@
             <div class="chat-panel" id="chatPanel">
                 <div class="panel-header">
                     <h2>Chat</h2>
-                    <div class="header-buttons">
-                        <button id="toggleChatMobile" class="toggle-btn mobile-only" aria-label="Toggle chat panel">▼</button>
-                        <button id="clearChat" class="clear-btn">Clear Chat</button>
-                    </div>
+                    <button id="clearChat" class="clear-btn">Clear Chat</button>
                 </div>
 
                 <div id="chatMessages" class="chat-messages">
@@ -52,10 +49,7 @@
             <div class="intent-panel" id="intentPanel">
                 <div class="panel-header">
                     <h2>Intent Analysis</h2>
-                    <div class="header-buttons">
-                        <button id="toggleIntentMobile" class="toggle-btn mobile-only" aria-label="Toggle intent panel">▼</button>
-                        <span id="confidenceBadge" class="confidence-badge" style="display: none;"></span>
-                    </div>
+                    <span id="confidenceBadge" class="confidence-badge" style="display: none;"></span>
                 </div>
 
                 <div id="intentDisplay" class="intent-display">
@@ -93,6 +87,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=13"></script>
+    <script src="app.js?v=14"></script>
 </body>
 </html>

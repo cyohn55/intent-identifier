@@ -26,11 +26,7 @@ const elements = {
     confidenceBadge: document.getElementById('confidenceBadge'),
     statusDot: document.getElementById('statusDot'),
     statusText: document.getElementById('statusText'),
-    messageCount: document.getElementById('messageCount'),
-    chatPanel: document.getElementById('chatPanel'),
-    intentPanel: document.getElementById('intentPanel'),
-    toggleChatMobile: document.getElementById('toggleChatMobile'),
-    toggleIntentMobile: document.getElementById('toggleIntentMobile')
+    messageCount: document.getElementById('messageCount')
 };
 
 // Configuration - uses external config.js
@@ -73,15 +69,6 @@ function setupEventListeners() {
 
     // Auto-resize textarea
     elements.messageInput.addEventListener('input', autoResizeTextarea);
-
-    // Mobile panel toggle buttons
-    elements.toggleChatMobile.addEventListener('click', () => {
-        elements.chatPanel.classList.toggle('collapsed');
-    });
-
-    elements.toggleIntentMobile.addEventListener('click', () => {
-        elements.intentPanel.classList.toggle('collapsed');
-    });
 }
 
 // Auto-resize textarea based on content
