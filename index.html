@@ -106,7 +106,7 @@
                 const timestamp = Date.now();
                 console.log('[Soul Buddy] Loading animator module with timestamp:', timestamp);
 
-                const { SoulBuddyAnimator } = await import(`/soul-buddy-animator.js?v=${timestamp}`);
+                const { SoulBuddyAnimator } = await import(`./soul-buddy-animator.js?v=${timestamp}`);
                 console.log('[Soul Buddy] Animator module loaded successfully');
 
                 // Initialize Soul Buddy animation on page load
@@ -121,11 +121,11 @@
                     }
 
                     const animator = new SoulBuddyAnimator(
-                        `/Models/soul-buddy-wave-2.glb?v=${timestamp}`,
-                        `/Models/soul-buddy-idle-1.glb?v=${timestamp}`,
-                        `/Models/soul-buddy-sleeping-1.glb?v=${timestamp}`,
-                        `/Models/soul-buddy-heart-1.glb?v=${timestamp}`,
-                        `/Models/soul-buddy-thinking-1.glb?v=${timestamp}`,
+                        `./Models/soul-buddy-wave-2.glb?v=${timestamp}`,
+                        `./Models/soul-buddy-idle-1.glb?v=${timestamp}`,
+                        `./Models/soul-buddy-sleeping-1.glb?v=${timestamp}`,
+                        `./Models/soul-buddy-heart-1.glb?v=${timestamp}`,
+                        `./Models/soul-buddy-thinking-1.glb?v=${timestamp}`,
                         'soulBuddyContainer'
                     );
 

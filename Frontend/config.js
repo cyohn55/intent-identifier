@@ -9,10 +9,10 @@
 
 const API_CONFIG = {
     // ============================================
-    // BACKEND SERVER URL (Port Forwarding Setup)
+    // BACKEND SERVER URL (Cloudflare Tunnel)
     // ============================================
-    // GitHub Pages frontend → Local backend via public IP
-    BACKEND_API_URL: 'http://72.72.161.84:8888',
+    // GitHub Pages frontend → Local backend via Cloudflare HTTPS tunnel
+    BACKEND_API_URL: 'https://tournament-bizrate-signature-governments.trycloudflare.com',
 
     // API Endpoints (automatically constructed)
     get HEALTH_ENDPOINT() {
