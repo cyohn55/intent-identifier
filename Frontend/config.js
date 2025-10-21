@@ -9,10 +9,10 @@
 
 const API_CONFIG = {
     // ============================================
-    // AUTO-DETECT BACKEND URL
+    // BACKEND SERVER URL (Port Forwarding Setup)
     // ============================================
-    // Use relative URL to automatically work with HTTP, HTTPS, and ngrok
-    BACKEND_API_URL: window.location.origin,
+    // GitHub Pages frontend → Local backend via public IP
+    BACKEND_API_URL: 'http://72.72.161.84:8888',
 
     // API Endpoints (automatically constructed)
     get HEALTH_ENDPOINT() {
