@@ -10,10 +10,11 @@
 #   ./start-server.sh           # Start normally
 #   ./start-server.sh --pm2     # Start with PM2
 #   ./start-server.sh --dev     # Start in development mode
+#   ./start-server.sh --ngrok   # Start with ngrok tunnel
 ###############################################################################
 
 # Configuration
-PORT=8888
+PORT=3000
 NODE_ENV="production"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SERVER_SCRIPT="$SCRIPT_DIR/Frontend/server.js"
@@ -37,121 +38,55 @@ print_info() {
     echo -e "${YELLOW}ℹ${NC} $1"
 }
 
-check_dependencies() {
-    print_info "Checking dependencies..."
-
-    # Check if Node.js is installed
-    if ! command -v node &> /dev/null; then
-        print_error "Node.js is not installed"
-        exit 1
-    fi
-    print_success "Node.js found: $(node --version)"
-
-    # Check if npm is installed
-    if ! command -v npm &> /dev/null; then
-        print_error "npm is not installed"
-        exit 1
-    fi
-    print_success "npm found: $(npm --version)"
-
-    # Check if node_modules exists
-    if [ ! -d "$SCRIPT_DIR/node_modules" ]; then
-        print_info "node_modules not found. Installing dependencies..."
-        cd "$SCRIPT_DIR" && npm install
-        if [ $? -ne 0 ]; then
-            print_error "Failed to install dependencies"
-            exit 1
-        fi
-        print_success "Dependencies installed"
-    else
-        print_success "Dependencies found"
-    fi
-}
-
-check_port() {
-    print_info "Checking if port $PORT is available..."
-
-    if lsof -Pi :$PORT -sTCP:LISTEN -t >/dev/null 2>&1 ; then
-        print_error "Port $PORT is already in use"
-        print_info "Process using port $PORT:"
-        lsof -Pi :$PORT -sTCP:LISTEN
-        read -p "Kill the process and continue? (y/n) " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            lsof -ti:$PORT | xargs kill -9
-            print_success "Process killed"
-        else
-            exit 1
-        fi
-    else
-        print_success "Port $PORT is available"
-    fi
-}
-
-check_ollama() {
-    print_info "Checking Ollama connection..."
-
-    if curl -s http://localhost:11434 > /dev/null 2>&1; then
-        print_success "Ollama is running"
-    else
-        print_error "Ollama is not running at http://localhost:11434"
-        print_info "Please start Ollama: ollama serve"
-        read -p "Continue anyway? (y/n) " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            exit 1
-        fi
-    fi
-}
-
-create_logs_dir() {
-    if [ ! -d "$SCRIPT_DIR/logs" ]; then
-        mkdir -p "$SCRIPT_DIR/logs"
-        print_success "Created logs directory"
-    fi
-}
-
 start_normal() {
     print_info "Starting server on port $PORT..."
     cd "$SCRIPT_DIR"
     PORT=$PORT NODE_ENV=$NODE_ENV node "$SERVER_SCRIPT"
 }
 
-start_pm2() {
-    # Check if PM2 is installed
-    if ! command -v pm2 &> /dev/null; then
-        print_error "PM2 is not installed"
-        print_info "Install PM2: npm install -g pm2"
+start_ngrok() {
+    print_info "Starting server with ngrok tunnel..."
+
+    # Check if ngrok exists
+    if [ ! -f "$SCRIPT_DIR/ngrok" ]; then
+        print_error "ngrok not found in $SCRIPT_DIR"
+        print_info "Please download ngrok from https://ngrok.com/download"
         exit 1
     fi
 
-    print_info "Starting server with PM2..."
+    # Kill any existing ngrok processes
+    pkill ngrok 2>/dev/null
+    sleep 2
+
+    # Start ngrok in the background
+    print_info "Starting ngrok tunnel on port $PORT..."
     cd "$SCRIPT_DIR"
+    ./ngrok http $PORT --log=stdout > ngrok.log 2>&1 &
+    NGROK_PID=$!
 
-    # Stop existing instance if running
-    pm2 delete intent-identifier 2>/dev/null
+    # Wait for ngrok to initialize
+    sleep 4
 
-    # Start with PM2
-    if [ -f "$SCRIPT_DIR/ecosystem.config.js" ]; then
-        pm2 start ecosystem.config.js
+    # Get the public URL
+    PUBLIC_URL=$(curl -s http://localhost:4040/api/tunnels | grep -o '"public_url":"https://[^"]*"' | head -1 | cut -d'"' -f4)
+
+    if [ -n "$PUBLIC_URL" ]; then
+        print_success "ngrok tunnel active: $PUBLIC_URL"
+        echo ""
+        echo "═══════════════════════════════════════════════════════════"
+        echo "  Public URL: $PUBLIC_URL"
+        echo "  ngrok Dashboard: http://localhost:4040"
+        echo "═══════════════════════════════════════════════════════════"
+        echo ""
     else
-        PORT=$PORT pm2 start "$SERVER_SCRIPT" --name "intent-identifier"
+        print_error "Could not retrieve ngrok URL. Check ngrok.log for details."
     fi
 
-    # Save PM2 process list
-    pm2 save
+    # Trap to cleanup ngrok when script exits
+    trap "echo ''; print_info 'Stopping ngrok...'; kill $NGROK_PID 2>/dev/null; exit" INT TERM EXIT
 
-    print_success "Server started with PM2"
-    print_info "View logs: pm2 logs intent-identifier"
-    print_info "Monitor: pm2 monit"
-    print_info "Stop: pm2 stop intent-identifier"
-}
-
-start_dev() {
-    print_info "Starting server in development mode..."
-    NODE_ENV="development"
-    cd "$SCRIPT_DIR"
-    PORT=$PORT NODE_ENV=$NODE_ENV nodemon "$SERVER_SCRIPT" 2>/dev/null || node "$SERVER_SCRIPT"
+    # Start the server
+    PORT=$PORT NODE_ENV=$NODE_ENV node "$SERVER_SCRIPT"
 }
 
 # Main script
@@ -160,23 +95,10 @@ echo "  Intent Identifier Server Startup"
 echo "========================================"
 echo
 
-# Run checks
-check_dependencies
-check_port
-check_ollama
-create_logs_dir
-
-echo
-echo "========================================"
-echo
-
 # Parse arguments
 case "$1" in
-    --pm2)
-        start_pm2
-        ;;
-    --dev)
-        start_dev
+    --ngrok)
+        start_ngrok
         ;;
     *)
         start_normal

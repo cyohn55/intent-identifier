@@ -47,3 +47,8 @@ coverage/
 Working/debug-*.js
 Working/test-*.js
 Working/check-*.js
+
+# ngrok
+ngrok
+ngrok.exe
+ngrok.log
