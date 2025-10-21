@@ -9,9 +9,10 @@
 
 const API_CONFIG = {
     // ============================================
-    // UPDATE THIS URL TO YOUR BACKEND SERVER
+    // AUTO-DETECT BACKEND URL
     // ============================================
-    BACKEND_API_URL: 'http://72.72.161.84:8888',
+    // Use relative URL to automatically work with HTTP, HTTPS, and ngrok
+    BACKEND_API_URL: window.location.origin,
 
     // API Endpoints (automatically constructed)
     get HEALTH_ENDPOINT() {
