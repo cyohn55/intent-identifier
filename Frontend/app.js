@@ -121,6 +121,11 @@ async function handleSendMessage() {
     updateMessageCount();
     disableSendButton(true);
 
+    // Trigger Soul Buddy thinking animation
+    if (window.soulBuddyAnimator && typeof window.soulBuddyAnimator.playThinkingAnimation === 'function') {
+        window.soulBuddyAnimator.playThinkingAnimation();
+    }
+
     // Add user message to chat
     addMessageToChat(message, 'user');
 
