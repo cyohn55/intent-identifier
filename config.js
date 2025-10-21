@@ -11,7 +11,7 @@ const API_CONFIG = {
     // ============================================
     // UPDATE THIS URL TO YOUR BACKEND SERVER
     // ============================================
-    BACKEND_API_URL: 'https://stentorian-denisha-insuperably.ngrok-free.dev',
+    BACKEND_API_URL: 'http://72.72.161.84:8888',
 
     // API Endpoints (automatically constructed)
     get HEALTH_ENDPOINT() {
