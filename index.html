@@ -106,7 +106,7 @@
                 const timestamp = Date.now();
                 console.log('[Soul Buddy] Loading animator module with timestamp:', timestamp);
 
-                const { SoulBuddyAnimator } = await import(`/Working/soul-buddy-animator.js?v=${timestamp}`);
+                const { SoulBuddyAnimator } = await import(`/soul-buddy-animator.js?v=${timestamp}`);
                 console.log('[Soul Buddy] Animator module loaded successfully');
 
                 // Initialize Soul Buddy animation on page load
