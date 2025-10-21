@@ -3,23 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Souloxy Intent Identifier</title>
-    <link rel="stylesheet" href="styles.css?v=14">
-    <script src="config.js?v=14"></script>
-    <!-- Build: 2025-10-16-v14-remove-toggle-functionality -->
+    <title>Intent Identifier - Chat Interface</title>
+    <link rel="stylesheet" href="styles.css?v=15">
+    <script src="config.js?v=15"></script>
 </head>
 <body>
     <div class="container">
         <!-- Header -->
         <header class="header">
-            <h1>Souloxy Intent Identifier</h1>
+            <h1>Intent Identifier Chat Interface</h1>
             <p class="subtitle">Powered by Llama 3.2 via Ollama</p>
         </header>
 
         <!-- Main Content Area -->
         <div class="main-content">
+            <!-- Soul Buddy Animation Container -->
+            <div id="soulBuddyContainer" class="soul-buddy-container"></div>
+
             <!-- Left Panel: Chat Window -->
-            <div class="chat-panel" id="chatPanel">
+            <div class="chat-panel">
                 <div class="panel-header">
                     <h2>Chat</h2>
                     <button id="clearChat" class="clear-btn">Clear Chat</button>
@@ -46,7 +48,7 @@
             </div>
 
             <!-- Right Panel: Intent Display -->
-            <div class="intent-panel" id="intentPanel">
+            <div class="intent-panel">
                 <div class="panel-header">
                     <h2>Intent Analysis</h2>
                     <span id="confidenceBadge" class="confidence-badge" style="display: none;"></span>
@@ -87,6 +89,57 @@
         </div>
     </div>
 
-    <script src="app.js?v=14"></script>
+    <script src="app.js?v=15"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <script type="module">
+        // Dynamic import to support cache busting
+        (async () => {
+            try {
+                console.log('[Soul Buddy] Starting animation initialization...');
+                const timestamp = Date.now();
+                console.log('[Soul Buddy] Loading animator module with timestamp:', timestamp);
+
+                const { SoulBuddyAnimator } = await import(`/Working/soul-buddy-animator.js?v=${timestamp}`);
+                console.log('[Soul Buddy] Animator module loaded successfully');
+
+                // Initialize Soul Buddy animation on page load
+                const initAnimation = () => {
+                    console.log('[Soul Buddy] DOMContentLoaded - Initializing animator...');
+                    const container = document.getElementById('soulBuddyContainer');
+                    console.log('[Soul Buddy] Container element:', container);
+
+                    if (!container) {
+                        console.error('[Soul Buddy] Container not found!');
+                        return;
+                    }
+
+                    const animator = new SoulBuddyAnimator(
+                        `/Models/soul-buddy-wave-2.glb?v=${timestamp}`,
+                        `/Models/soul-buddy-idle-1.glb?v=${timestamp}`,
+                        `/Models/soul-buddy-sleeping-1.glb?v=${timestamp}`,
+                        `/Models/soul-buddy-heart-1.glb?v=${timestamp}`,
+                        'soulBuddyContainer'
+                    );
+                    console.log('[Soul Buddy] Animator instance created:', animator);
+                };
+
+                if (document.readyState === 'loading') {
+                    window.addEventListener('DOMContentLoaded', initAnimation);
+                } else {
+                    // DOM already loaded
+                    initAnimation();
+                }
+            } catch (error) {
+                console.error('[Soul Buddy] Error initializing animation:', error);
+            }
+        })();
+    </script>
 </body>
 </html>

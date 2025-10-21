@@ -210,6 +210,7 @@ function displayIntent(intentResult) {
         intent: intentResult.intent,
         confidence: intentResult.confidence,
         entities: intentResult.entities,
+        reasoning: intentResult.reasoning,
         error: intentResult.error
     }, null, 2);
 

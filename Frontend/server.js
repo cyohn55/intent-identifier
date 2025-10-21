@@ -21,6 +21,8 @@ const PORT = process.env.PORT || 3000;
 app.use(cors()); // Enable CORS for frontend requests
 app.use(express.json()); // Parse JSON request bodies
 app.use(express.static(__dirname)); // Serve static files from Frontend directory
+app.use('/Models', express.static(path.join(__dirname, '../Models'))); // Serve Models directory
+app.use('/Working', express.static(path.join(__dirname, '../Working'))); // Serve Working directory
 
 // Initialize IntentAgent
 let agent;

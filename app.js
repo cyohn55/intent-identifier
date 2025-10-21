@@ -98,8 +98,8 @@ async function checkConnection() {
         }
     } catch (error) {
         console.error('✗ Backend connection failed:', error.message);
-        updateStatus('disconnected', 'Connecting to backend...');
-        // Don't show error message in chat - connection may succeed on first message send
+        updateStatus('disconnected', 'Backend Unavailable - Please start server');
+        addErrorMessage('Cannot connect to backend server. Please ensure the server is running at: ' + config.apiEndpoint);
         return false;
     }
 }
@@ -167,10 +167,6 @@ async function processMessageWithIntent(message) {
 
         const data = await response.json();
         console.log('✓ Intent classified:', data);
-
-        // Update status to connected on successful response
-        updateStatus('connected', 'Connected');
-
         return data;
     } catch (error) {
         console.error('✗ API call failed:', error);
@@ -242,17 +238,9 @@ function updateIntentSummary(intentResult) {
     // Format entities
     const entitiesCount = Object.keys(intentResult.entities).length;
     if (entitiesCount > 0) {
-        // Format entities in a more readable way
-        const entityList = Object.entries(intentResult.entities)
-            .map(([key, value]) => `${key}: "${value}"`)
-            .join(', ');
-        elements.intentEntities.textContent = entityList;
-        elements.intentEntities.style.fontFamily = 'monospace';
-        elements.intentEntities.style.color = '#609966';
+        elements.intentEntities.textContent = JSON.stringify(intentResult.entities);
     } else {
         elements.intentEntities.textContent = 'None detected';
-        elements.intentEntities.style.fontFamily = 'inherit';
-        elements.intentEntities.style.color = '#999';
     }
 
     // Update confidence badge
