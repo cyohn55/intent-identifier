@@ -210,7 +210,7 @@ app.use((error, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log('');
     console.log('═══════════════════════════════════════════════════════════');
     console.log('  Intent Identifier Server');
