@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Souloxy Intent Identifier</title>
-    <link rel="stylesheet" href="styles.css?v=18">
-    <script src="config.js?v=18"></script>
+    <link rel="stylesheet" href="styles.css?v=21">
+    <script src="config.js?v=21"></script>
 </head>
 <body>
     <div class="container">
@@ -129,6 +129,10 @@
                         'soulBuddyContainer'
                     );
                     console.log('[Soul Buddy] Animator instance created:', animator);
+
+                    // Expose animator to window for thinking animation trigger
+                    window.soulBuddyAnimator = animator;
+                    console.log('[Soul Buddy] Animator exposed to window.soulBuddyAnimator');
                 };
 
                 if (document.readyState === 'loading') {
