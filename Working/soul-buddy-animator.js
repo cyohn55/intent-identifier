@@ -68,6 +68,10 @@ export class SoulBuddyAnimator {
         // Unified scale factor for all models
         this.uniformScale = null;
 
+        // Cache positions and scales for each model to maintain consistency
+        this.modelPositionCache = {};
+        this.modelScaleCache = {};
+
         // Store skybox separately to persist across animations
         this.skybox = null;
         this.skyboxContainer = null; // Container for the skybox clone
@@ -562,8 +566,34 @@ export class SoulBuddyAnimator {
         // Add model to scene
         this.scene.add(this.currentModel);
 
-        // Center and scale the model
-        this.centerModel();
+        // Check if we have cached position and scale for this model
+        if (this.modelPositionCache[modelName] && this.modelScaleCache[modelName]) {
+            // Use cached values to maintain consistent positioning
+            const cachedPos = this.modelPositionCache[modelName];
+            const cachedScale = this.modelScaleCache[modelName];
+
+            this.currentModel.position.set(cachedPos.x, cachedPos.y, cachedPos.z);
+            this.currentModel.scale.set(cachedScale.x, cachedScale.y, cachedScale.z);
+
+            console.log(`Using cached position for ${modelName}: (${cachedPos.x.toFixed(3)}, ${cachedPos.y.toFixed(3)}, ${cachedPos.z.toFixed(3)})`);
+        } else {
+            // First time showing this model, center it and cache the result
+            this.centerModel();
+
+            // Cache the position and scale
+            this.modelPositionCache[modelName] = {
+                x: this.currentModel.position.x,
+                y: this.currentModel.position.y,
+                z: this.currentModel.position.z
+            };
+            this.modelScaleCache[modelName] = {
+                x: this.currentModel.scale.x,
+                y: this.currentModel.scale.y,
+                z: this.currentModel.scale.z
+            };
+
+            console.log(`Cached position for ${modelName}: (${this.currentModel.position.x.toFixed(3)}, ${this.currentModel.position.y.toFixed(3)}, ${this.currentModel.position.z.toFixed(3)})`);
+        }
 
         // Reset animation and start
         this.currentFrame = 0;
@@ -672,7 +702,10 @@ export class SoulBuddyAnimator {
 
         this.heartAnimationPlaying = true;
 
-        // Save current model position and scale before switching
+        // Save current animation state, model name, position and scale before switching
+        this.savedAnimationState = this.animationState;
+        this.savedModelName = this.currentModelName;
+
         this.savedModelPosition = {
             x: this.currentModel.position.x,
             y: this.currentModel.position.y,
@@ -685,6 +718,8 @@ export class SoulBuddyAnimator {
             z: this.currentModel.scale.z
         };
 
+        console.log(`[Heart] Saved animation state: ${this.savedAnimationState}`);
+        console.log(`[Heart] Saved model name: ${this.savedModelName}`);
         console.log(`[Heart] Saved ${this.currentModelName} position: (${this.savedModelPosition.x.toFixed(3)}, ${this.savedModelPosition.y.toFixed(3)}, ${this.savedModelPosition.z.toFixed(3)})`);
         console.log(`[Heart] Saved ${this.currentModelName} scale: ${this.savedModelScale.x.toFixed(3)}`);
 
@@ -791,12 +826,16 @@ export class SoulBuddyAnimator {
         // Remove heart model
         this.scene.remove(this.currentModel);
 
-        // Always switch to idle animation after heart completes
-        console.log('Heart animation complete, switching to idle');
+        // Always switch to idle after heart animation completes
+        console.log(`Heart animation complete, switching to idle (was: ${this.savedAnimationState})`);
+
         this.animationState = 'idle';
         this.idleLoopCount = 1;
 
-        // Set new current model
+        // Set flag to transition to sleeping after idle completes one cycle
+        this.transitionToSleepingAfterIdle = true;
+
+        // Set model to idle
         this.currentModel = this.models['idle'];
         this.currentModelName = 'idle';
 
@@ -809,13 +848,13 @@ export class SoulBuddyAnimator {
         // Add model to scene
         this.scene.add(this.currentModel);
 
-        // Always center the idle model correctly instead of restoring saved position
-        // This ensures idle is always positioned correctly regardless of which animation
-        // the user clicked from (idle, sleeping, or wave)
+        // Always use centerModel() for idle to position it correctly
         this.centerModel();
-        console.log('Idle model repositioned using centerModel() after heart animation');
+        console.log('Idle model positioned using centerModel() after heart animation');
 
-        // Clean up saved position/scale
+        // Clean up saved state
+        this.savedAnimationState = null;
+        this.savedModelName = null;
         this.savedModelPosition = null;
         this.savedModelScale = null;
 
@@ -825,7 +864,7 @@ export class SoulBuddyAnimator {
         this.heartAnimationPlaying = false;
         this.startAnimation();
 
-        console.log('Switched to idle animation after heart');
+        console.log('Started idle animation after heart (will transition to sleeping after one cycle)');
     }
 
     /**
@@ -1340,12 +1379,20 @@ export class SoulBuddyAnimator {
             this.idleLoopCount++;
             console.log(`Idle loop ${this.idleLoopCount} of ${this.maxIdleLoops} complete`);
 
-            if (this.idleLoopCount < this.maxIdleLoops) {
-                // Continue idle loop
+            // Check if we need to transition to sleeping after heart animation
+            if (this.transitionToSleepingAfterIdle) {
+                // One idle cycle complete after heart, switch to sleeping
+                console.log('Idle cycle after heart complete, transitioning to sleeping');
+                this.transitionToSleepingAfterIdle = false; // Clear the flag
+                this.animationState = 'sleeping';
+                this.sleepingLoopCount = 0; // Reset sleeping loop counter
+                this.switchToModel('sleeping');
+            } else if (this.idleLoopCount < this.maxIdleLoops) {
+                // Continue idle loop (normal behavior)
                 this.currentFrame = 0;
                 this.startAnimation();
             } else {
-                // Idle loops complete, switch to sleeping
+                // Idle loops complete, switch to sleeping (normal behavior)
                 console.log('Idle loops complete, switching to sleeping');
                 this.animationState = 'sleeping';
                 this.sleepingLoopCount = 0; // Reset sleeping loop counter

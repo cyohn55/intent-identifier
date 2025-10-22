@@ -9,10 +9,13 @@
 
 const API_CONFIG = {
     // ============================================
-    // BACKEND SERVER URL (Cloudflare Tunnel)
+    // Auto-detect backend URL based on current origin
+    // This allows the same config to work locally and through tunnels
     // ============================================
-    // GitHub Pages frontend → Local backend via Cloudflare HTTPS tunnel
-    BACKEND_API_URL: 'https://tournament-bizrate-signature-governments.trycloudflare.com',
+    get BACKEND_API_URL() {
+        // Use the current origin (works for both localhost and tunnel URLs)
+        return window.location.origin;
+    },
 
     // API Endpoints (automatically constructed)
     get HEALTH_ENDPOINT() {
