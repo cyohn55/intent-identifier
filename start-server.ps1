@@ -10,15 +10,15 @@ param(
 # Configuration
 $PORT = if ($port) { $port } else { 3000 }
 
-Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan
+Write-Host "===================================================================" -ForegroundColor Cyan
 Write-Host "  Intent Identifier - Starting Services" -ForegroundColor Cyan
-Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan
+Write-Host "===================================================================" -ForegroundColor Cyan
 Write-Host ""
 
 if ($ngrok) {
     # Check if ngrok exists
     if (-Not (Test-Path ".\ngrok.exe")) {
-        Write-Host "✗ ngrok.exe not found" -ForegroundColor Red
+        Write-Host "X ngrok.exe not found" -ForegroundColor Red
         Write-Host "  Please download ngrok from https://ngrok.com/download" -ForegroundColor Yellow
         exit 1
     }
@@ -42,18 +42,18 @@ if ($ngrok) {
         $publicUrl = $response.tunnels | Where-Object { $_.proto -eq "https" } | Select-Object -First 1 -ExpandProperty public_url
 
         if ($publicUrl) {
-            Write-Host "✓ ngrok tunnel active: $publicUrl" -ForegroundColor Green
+            Write-Host "Success! ngrok tunnel active: $publicUrl" -ForegroundColor Green
             Write-Host ""
-            Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan
+            Write-Host "===================================================================" -ForegroundColor Cyan
             Write-Host "  Public URL: $publicUrl" -ForegroundColor Green
             Write-Host "  ngrok Dashboard: http://localhost:4040" -ForegroundColor Green
-            Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan
+            Write-Host "===================================================================" -ForegroundColor Cyan
             Write-Host ""
         } else {
-            Write-Host "⚠ Could not retrieve ngrok URL. Check ngrok.log for details." -ForegroundColor Yellow
+            Write-Host "Warning: Could not retrieve ngrok URL. Check ngrok.log for details." -ForegroundColor Yellow
         }
     } catch {
-        Write-Host "⚠ Could not connect to ngrok API. Check ngrok.log for details." -ForegroundColor Yellow
+        Write-Host "Warning: Could not connect to ngrok API. Check ngrok.log for details." -ForegroundColor Yellow
     }
 
     # Cleanup function
