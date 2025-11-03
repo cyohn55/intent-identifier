@@ -16,7 +16,7 @@ const API_CONFIG = {
     get BACKEND_API_URL() {
         // If on GitHub Pages, use the Cloudflare tunnel backend
         if (window.location.hostname.includes('github.io')) {
-            return 'https://appears-breakfast-jacket-midi.trycloudflare.com';
+            return 'https://films-asthma-replacement-write.trycloudflare.com';
         }
         // Otherwise, use the current origin (works for localhost and tunnel URLs)
         return window.location.origin;

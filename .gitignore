@@ -52,3 +52,7 @@ Working/check-*.js
 ngrok
 ngrok.exe
 ngrok.log
+
+# cloudflared
+cloudflared
+cloudflared.exe
