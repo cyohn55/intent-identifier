@@ -13,10 +13,11 @@ $env:NODE_ENV = "production"
 
 # Check if cloudflared exists (check both .exe and no extension)
 $cloudflaredPath = $null
-if (Test-Path ".\cloudflared.exe") {
-    $cloudflaredPath = ".\cloudflared.exe"
-} elseif (Test-Path ".\cloudflared") {
-    $cloudflaredPath = ".\cloudflared"
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+if (Test-Path "$scriptDir\cloudflared.exe") {
+    $cloudflaredPath = "$scriptDir\cloudflared.exe"
+} elseif (Test-Path "$scriptDir\cloudflared") {
+    $cloudflaredPath = "$scriptDir\cloudflared"
 } else {
     Write-Host "ERROR: cloudflared executable not found!" -ForegroundColor Red
     Write-Host "Please download from: https://github.com/cloudflare/cloudflared/releases" -ForegroundColor Yellow
@@ -32,7 +33,7 @@ $serverJob = Start-Job -ScriptBlock {
     $env:PORT = $port
     $env:NODE_ENV = "production"
     Set-Location $using:PWD
-    Set-Location Frontend
+    Set-Location Backend
     node server.js
 } -ArgumentList $PORT
 
@@ -61,7 +62,9 @@ Write-Host ""
 # Start cloudflared tunnel (this will run in foreground and show output)
 # Since cloudflared is a Linux binary, we need to run it through WSL
 Write-Host "Running cloudflared through WSL..." -ForegroundColor Cyan
-wsl ./cloudflared tunnel --url http://localhost:$PORT
+# Convert Windows path to WSL path for cloudflared
+$wslPath = $cloudflaredPath -replace '\\', '/' -replace '^([A-Z]):', { "/mnt/$($_.Groups[1].Value.ToLower())" }
+wsl $wslPath tunnel --url http://localhost:$PORT
 
 # Cleanup when tunnel stops (Ctrl+C)
 Write-Host ""

@@ -17,7 +17,8 @@
 PORT=3000
 NODE_ENV="production"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SERVER_SCRIPT="$SCRIPT_DIR/Frontend/server.js"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SERVER_SCRIPT="$PROJECT_ROOT/Backend/server.js"
 
 # Colors for output
 RED='\033[0;31m'
@@ -40,7 +41,7 @@ print_info() {
 
 start_normal() {
     print_info "Starting server on port $PORT..."
-    cd "$SCRIPT_DIR"
+    cd "$PROJECT_ROOT"
     PORT=$PORT NODE_ENV=$NODE_ENV node "$SERVER_SCRIPT"
 }
 

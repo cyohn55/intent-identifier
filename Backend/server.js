@@ -10,8 +10,8 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
-// Import the IntentAgent from the Working directory
-const { IntentAgent } = require('../Working/intentAgent');
+// Import the IntentAgent from the Backend directory
+const { IntentAgent } = require('./intentAgent');
 
 // Initialize Express app
 const app = express();
@@ -20,9 +20,8 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors()); // Enable CORS for frontend requests
 app.use(express.json()); // Parse JSON request bodies
-app.use(express.static(__dirname)); // Serve static files from Frontend directory
+app.use(express.static(path.join(__dirname, '..'))); // Serve static files from root directory
 app.use('/Models', express.static(path.join(__dirname, '../Models'))); // Serve Models directory
-app.use('/Working', express.static(path.join(__dirname, '../Working'))); // Serve Working directory
 
 // Initialize IntentAgent
 let agent;

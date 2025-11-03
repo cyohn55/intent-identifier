@@ -72,20 +72,23 @@ Write-Host ""
 
 # Set environment variables and start server
 $env:PORT = $PORT
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$projectRoot = Split-Path -Parent $scriptDir
+$backendDir = Join-Path $projectRoot "Backend"
 
 if ($dev) {
     $env:NODE_ENV = "development"
     # Try nodemon first, fall back to node
     if (Get-Command nodemon -ErrorAction SilentlyContinue) {
-        Set-Location Frontend
+        Set-Location $backendDir
         nodemon server.js
     } else {
-        Set-Location Frontend
+        Set-Location $backendDir
         node server.js
     }
 } else {
     $env:NODE_ENV = "production"
-    Set-Location Frontend
+    Set-Location $backendDir
     node server.js
 }
 
