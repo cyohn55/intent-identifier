@@ -3,8 +3,8 @@
  *
  * IMPORTANT: Update BACKEND_API_URL with your server's public URL
  *
- * For local testing: http://localhost:3000
- * For production: Your server's public URL (e.g., http://your-ip:3000 or https://your-domain.com)
+ * For local testing: http://localhost:3002
+ * For production: Your server's public URL (e.g., http://your-ip:3002 or https://your-domain.com)
  */
 
 const API_CONFIG = {

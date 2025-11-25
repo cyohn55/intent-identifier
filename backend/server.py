@@ -12,13 +12,14 @@ from datetime import datetime
 from typing import List, Optional
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field, validator
 
 from intent_agent import IntentAgent
+from auth_middleware import authenticate_request, AUTH_ENABLED
 
 
 # Request/Response Models
@@ -124,20 +125,25 @@ async def health_check():
 
 
 @app.post("/api/classify", response_model=ClassifyResponse)
-async def classify_message(request: ClassifyRequest):
+async def classify_message(
+    request: ClassifyRequest,
+    user_info: dict = Depends(authenticate_request)
+):
     """
-    Intent classification endpoint.
+    Intent classification endpoint with JWT authentication.
     POST /api/classify
     Body: { "message": "user input text" }
+    Headers: { "Authorization": "Bearer <JWT>" } (if JWT_AUTH_ENABLED=true)
 
     Args:
         request (ClassifyRequest): Request containing user message
+        user_info (dict): Authenticated user information from JWT
 
     Returns:
         ClassifyResponse: Classification results with metadata
 
     Raises:
-        HTTPException: If processing fails
+        HTTPException: If processing fails or authentication fails
     """
     try:
         message = request.message
@@ -210,20 +216,25 @@ async def get_categories():
 
 
 @app.post("/api/classify-batch")
-async def classify_batch(request: BatchClassifyRequest):
+async def classify_batch(
+    request: BatchClassifyRequest,
+    user_info: dict = Depends(authenticate_request)
+):
     """
-    Batch classification endpoint.
+    Batch classification endpoint with JWT authentication.
     POST /api/classify-batch
     Body: { "messages": ["msg1", "msg2", ...] }
+    Headers: { "Authorization": "Bearer <JWT>" } (if JWT_AUTH_ENABLED=true)
 
     Args:
         request (BatchClassifyRequest): Request containing list of messages
+        user_info (dict): Authenticated user information from JWT
 
     Returns:
         dict: Batch classification results
 
     Raises:
-        HTTPException: If batch processing fails
+        HTTPException: If batch processing fails or authentication fails
     """
     try:
         messages = request.messages
