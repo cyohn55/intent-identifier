@@ -32,10 +32,10 @@ const elements = {
 // Configuration - uses external config.js
 const config = {
     get apiEndpoint() {
-        return window.API_CONFIG ? window.API_CONFIG.CLASSIFY_ENDPOINT : 'http://localhost:3000/api/classify';
+        return window.API_CONFIG ? window.API_CONFIG.CLASSIFY_ENDPOINT : 'http://localhost:3002/api/classify';
     },
     get healthEndpoint() {
-        return window.API_CONFIG ? window.API_CONFIG.HEALTH_ENDPOINT : 'http://localhost:3000/api/health';
+        return window.API_CONFIG ? window.API_CONFIG.HEALTH_ENDPOINT : 'http://localhost:3002/api/health';
     }
 };
 
